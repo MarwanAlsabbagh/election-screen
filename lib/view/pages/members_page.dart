@@ -1,44 +1,16 @@
 import 'package:flutter/material.dart';
-
+import 'package:get/get.dart';
+import '../../controller/member_controller.dart';
 import '../widgets/custom_app_bar.dart';
-import '../widgets/member_card.dart'; // استيراد الويدجت الجديدة
+import '../widgets/member_card.dart';
 
-class MembersPage extends StatefulWidget {
+class MembersPage extends StatelessWidget {
   const MembersPage({super.key});
 
   @override
-  State<MembersPage> createState() => _MembersPageState();
-}
-
-class _MembersPageState extends State<MembersPage> {
-  TextEditingController searchController = TextEditingController();
-
-  final List<Map<String, String?>> members = [
-    {
-      "name": "يوسف بيرقدار",
-      "governorate": "دمشق",
-      "category": "أ",
-      "party": "حزب العمال الديمقراطي",
-      "imagePath": "assets/images/Rectangle 35.png",
-      "partyLogoPath": "assets/icons/Logo.png",
-    },
-    {
-      "name": "أحمد العلي",
-      "governorate": "حلب",
-      "category": "ب",
-      "party": "حزب الاستقلال الوطني",
-      "imagePath": "assets/images/Rectangle 35.png",
-      "partyLogoPath": "assets/icons/Logo.png",
-    },
-    {
-      "name": "سعيد منصور",
-      "imagePath": "assets/images/Rectangle 35.png",
-
-    },
-  ];
-
-  @override
   Widget build(BuildContext context) {
+    final MembersController controller = Get.put(MembersController()); // ربط الـ Controller
+
     return Scaffold(
       appBar: const CustomAppBar(),
       body: Directionality(
@@ -47,6 +19,7 @@ class _MembersPageState extends State<MembersPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              // حقل البحث
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -61,7 +34,7 @@ class _MembersPageState extends State<MembersPage> {
                   ],
                 ),
                 child: TextField(
-                  controller: searchController,
+                  controller: controller.searchController,
                   textDirection: TextDirection.rtl,
                   textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 16),
@@ -79,20 +52,22 @@ class _MembersPageState extends State<MembersPage> {
               const SizedBox(height: 20),
 
               Expanded(
-                child: ListView.builder(
-                  itemCount: members.length,
-                  itemBuilder: (context, index) {
-                    final member = members[index];
-                    return MemberCard(
-                      name: member["name"]!,
-                      governorate: member["governorate"],
-                      category: member["category"],
-                      party: member["party"],
-                      imagePath: member["imagePath"]!,
-                      partyLogoPath: member["partyLogoPath"],
-                    );
-                  },
-                ),
+                child: Obx(() {
+                  return ListView.builder(
+                    itemCount: controller.filteredMembers.length,
+                    itemBuilder: (context, index) {
+                      final member = controller.filteredMembers[index];
+                      return MemberCard(
+                        name: member["name"]!,
+                        governorate: member["governorate"],
+                        category: member["category"],
+                        party: member["party"],
+                        imagePath: member["imagePath"]!,
+                        partyLogoPath: member["partyLogoPath"],
+                      );
+                    },
+                  );
+                }),
               ),
             ],
           ),

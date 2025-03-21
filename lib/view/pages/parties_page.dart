@@ -1,42 +1,16 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:untitled8/view/widgets/parties_card.dart';
-
+import 'package:get/get.dart';
+import '../../controller/parties__controller.dart';
 import '../widgets/custom_app_bar.dart';
+import '../widgets/parties_card.dart';
 
-class PartiesPage extends StatefulWidget {
+class PartiesPage extends StatelessWidget {
   const PartiesPage({super.key});
 
   @override
-  State<PartiesPage> createState() => _PartiesPageState();
-}
-
-class _PartiesPageState extends State<PartiesPage> {
-  TextEditingController searchController = TextEditingController();
-
-  final List<Map<String, dynamic>> parties = [
-    {
-      "name": "حزب العمال الديمقراطي",
-      "governorate": "دمشق",
-      "imagePath": "assets/Logo.png",
-      "numbermembers": 120,
-    },
-    {
-      "name": "حزب العمال الديمقراطي",
-      "governorate": "دمشق",
-      "imagePath": "assets/Logo.png",
-      "numbermembers": 120,
-    },
-    {
-      "name": "حزب العمال الديمقراطي",
-      "governorate": "دمشق",
-      "imagePath": "assets/Logo.png",
-      "numbermembers": 120,
-    },
-  ];
-
-  @override
   Widget build(BuildContext context) {
+    final PartiesController controller = Get.put(PartiesController());
+
     return Scaffold(
       appBar: const CustomAppBar(),
       body: Directionality(
@@ -60,12 +34,12 @@ class _PartiesPageState extends State<PartiesPage> {
                   ],
                 ),
                 child: TextField(
-                  controller: searchController,
+                  controller: controller.searchController,
                   textDirection: TextDirection.rtl,
                   textAlign: TextAlign.right,
                   style: const TextStyle(fontSize: 16),
                   decoration: InputDecoration(
-                    hintText: "ابحث عن ما تريد...",
+                    hintText: "ابحث عن الحزب...",
                     prefixIcon: const Icon(Icons.search, color: Colors.green),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
@@ -77,19 +51,22 @@ class _PartiesPageState extends State<PartiesPage> {
 
               const SizedBox(height: 20),
 
+              // عرض الأحزاب باستخدام GetX
               Expanded(
-                child: ListView.builder(
-                  itemCount: parties.length,
-                  itemBuilder: (context, index) {
-                    final party = parties[index];
-                    return PartiesCard(
-                      name: party["name"]!,
-                      governorate: party["governorate"]!,
-                      imagePath: party["imagePath"]!,
-                      numberMember: party["numbermembers"]!,
-                    );
-                  },
-                ),
+                child: Obx(() {
+                  return ListView.builder(
+                    itemCount: controller.filteredParties.length,
+                    itemBuilder: (context, index) {
+                      final party = controller.filteredParties[index];
+                      return PartiesCard(
+                        name: party["name"]!,
+                        governorate: party["governorate"]!,
+                        imagePath: party["imagePath"]!,
+                        numberMember: party["numbermembers"]!,
+                      );
+                    },
+                  );
+                }),
               ),
             ],
           ),
